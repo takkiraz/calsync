@@ -24,7 +24,7 @@ Current rules:
 1. Titles matching `dienst` (Frühdienst, Spätdienst, Nachtdienst) become "Kinderbetreuung", busy. Titles containing Oma, Opa, Omi, or Opi are skipped, so appending the name of whoever covers a shift removes the work block on the next run.
 2. Every other event is mirrored with its original title as tentative. A shared iCloud calendar does not record who created an event, so this is where I decide.
 
-All-day events (birthdays, holidays, vacation) are never mirrored. Other settings: `targetCalendar` and `horizonDays` (how far ahead to sync, from today).
+All-day events (birthdays, holidays, vacation) are never mirrored. Neither are invitations from other people unless I accepted them: iCloud shows new invitations in the default calendar, and nobody should be able to block my work calendar by sending me one. Other settings: `targetCalendar` and `horizonDays` (how far ahead to sync, from today).
 
 ## Deciding in Outlook
 

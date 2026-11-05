@@ -24,6 +24,10 @@ EventKit exposes no creator for events in a shared iCloud calendar: organizer an
 
 Deleting a tentative mirror in Outlook must not bring it back on the next run, and setting one to busy must not be reverted. The tool therefore keeps the keys of all mirrors it ever created in `~/Library/Application Support/calsync/seen.json`, skips sources whose key is known but whose mirror is gone, and never writes availability to an existing mirror. Title, start, and end still follow the family calendar. This supersedes "mirror wins over manual edits" for deletion and availability.
 
+## 2026-11-05: Events from other people are ignored
+
+The default iCloud calendar on this Mac is Familie, so any invitation I receive shows up there before I accept it. Mirroring it would let a stranger place events into my work calendar, including busy blocks when the title contains "dienst". Only events without an organizer, organized by me, or accepted by me are mirrored. The same check applies when looking for mirrors in the Exchange calendar, and the marker is read from its last occurrence, so neither a title containing "calsync:" nor a meeting invite with it in the body can pass as a mirror. Titles are stripped of control characters before logging.
+
 ## 2026-11-05: All-day events are skipped
 
 The first dry run of the Privat rule picked up a birthday, which would have blocked a whole work day as busy. All-day entries in my calendars are birthdays, holidays, or vacation, and vacation reaches the work calendar through HR. Skipping them is one condition and avoids leaking private all-day entries into the work calendar.

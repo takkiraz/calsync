@@ -54,8 +54,17 @@ func matches(_ pattern: String?, _ text: String) -> Bool {
     return text.range(of: pattern, options: [.regularExpression, .caseInsensitive]) != nil
 }
 
+func trusted(_ event: EKEvent) -> Bool {
+    guard let organizer = event.organizer, !organizer.isCurrentUser else { return true }
+    return event.attendees?.contains { $0.isCurrentUser && $0.participantStatus == .accepted } ?? false
+}
+
+func clean(_ text: String) -> String {
+    String(text.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) })
+}
+
 func rule(for event: EKEvent) -> Rule? {
-    guard !event.isAllDay else { return nil }
+    guard !event.isAllDay, trusted(event) else { return nil }
     let title = event.title ?? ""
     return rules.first { matches($0.include, title) && !matches($0.exclude, title) }
 }
@@ -67,8 +76,10 @@ func key(of event: EKEvent) -> String {
 }
 
 func mirroredKey(of event: EKEvent) -> String? {
-    guard let notes = event.notes, let range = notes.range(of: marker) else { return nil }
-    return String(notes[range.upperBound...].prefix { !$0.isWhitespace })
+    guard trusted(event), !event.hasAttendees, let notes = event.notes,
+          let range = notes.range(of: marker, options: .backwards) else { return nil }
+    let key = String(notes[range.upperBound...].prefix { !$0.isWhitespace })
+    return key.isEmpty ? nil : key
 }
 
 requestAccess()
@@ -105,7 +116,7 @@ for event in store.events(matching: store.predicateForEvents(withStart: start, e
     if mirror == nil && seen.contains(key) { continue }
     if let mirror, mirror.startDate == event.startDate, mirror.endDate == event.endDate, mirror.title == title { continue }
     let action = mirror == nil ? "create\(rule.availability == .tentative ? " tentative" : "")" : "update"
-    print("\(action) \(formatter.string(from: event.startDate))-\(formatter.string(from: event.endDate).suffix(5)) \(event.title ?? "")")
+    print("\(action) \(formatter.string(from: event.startDate))-\(formatter.string(from: event.endDate).suffix(5)) \(clean(event.title ?? ""))")
     if dryRun { continue }
     let item = mirror ?? EKEvent(eventStore: store)
     if mirror == nil {
@@ -121,7 +132,7 @@ for event in store.events(matching: store.predicateForEvents(withStart: start, e
     must { try store.save(item, span: .thisEvent, commit: false) }
 }
 for orphan in existing.values {
-    print("delete \(formatter.string(from: orphan.startDate)) \(orphan.notes?.components(separatedBy: "\n").first ?? "")")
+    print("delete \(formatter.string(from: orphan.startDate)) \(clean(orphan.notes?.components(separatedBy: "\n").first ?? ""))")
     if dryRun { continue }
     must { try store.remove(orphan, span: .thisEvent, commit: false) }
 }
