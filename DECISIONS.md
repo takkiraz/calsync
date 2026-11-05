@@ -24,6 +24,10 @@ EventKit exposes no creator for events in a shared iCloud calendar: organizer an
 
 Deleting a tentative mirror in Outlook must not bring it back on the next run, and setting one to busy must not be reverted. The tool therefore keeps the keys of all mirrors it ever created in `~/Library/Application Support/calsync/seen.json`, skips sources whose key is known but whose mirror is gone, and never writes availability to an existing mirror. Title, start, and end still follow the family calendar. This supersedes "mirror wins over manual edits" for deletion and availability.
 
+## 2026-11-05: Tentative stays the default for unknown family events
+
+The interview tool treats tentative appointments as available. Unknown family events still start as tentative: a missed interview slot costs less than a work calendar full of false busy blocks from my partner's appointments, and setting the ones that concern me to busy is one click. Flip the second rule to `.busy` if that balance changes.
+
 ## 2026-11-05: Events from other people are ignored
 
 The default iCloud calendar on this Mac is Familie, so any invitation I receive shows up there before I accept it. Mirroring it would let a stranger place events into my work calendar, including busy blocks when the title contains "dienst". Only events without an organizer, organized by me, or accepted by me are mirrored. The same check applies when looking for mirrors in the Exchange calendar, and the marker is read from its last occurrence, so neither a title containing "calsync:" nor a meeting invite with it in the body can pass as a mirror. Titles are stripped of control characters before logging.

@@ -31,7 +31,7 @@ All-day events (birthdays, holidays, vacation) are never mirrored. Neither are i
 A tentative mirror is a question: does this family appointment concern me?
 
 - Not mine: delete it in Outlook. It stays deleted, the tool remembers the event in `~/Library/Application Support/calsync/seen.json`.
-- Mine: set it to Busy. The tool never touches availability of an existing mirror. Left as tentative, it depends on the interview tool whether that counts as free.
+- Mine: set it to Busy. The tool never touches availability of an existing mirror. The interview tool treats tentative as available, so a mirror left tentative blocks nothing.
 
 Title, start, and end of a mirror follow the family calendar; the tool overwrites them on change. A mirror whose source disappeared is deleted. If `seen.json` is lost, every rejected event comes back once as tentative.
 
